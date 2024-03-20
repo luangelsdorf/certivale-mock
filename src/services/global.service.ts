@@ -7,7 +7,7 @@ export async function createSchedule() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${await getToken()}`,
     },
     body: JSON.stringify({
       user_id: "e3fc75bf-05ee-46d6-9903-7a9345c9ce7d",
@@ -20,6 +20,8 @@ export async function createSchedule() {
       date_time: "2024-10-18T12:30:00",
     }),
   });
+
+  console.log(response);
 
   if (response.status === 201) {
     const location = response.headers.get("Location")?.split("/").pop();
@@ -38,7 +40,7 @@ export async function getSchedule() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${await getToken()}`,
     },
   });
 
@@ -59,7 +61,7 @@ export async function createSale() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${await getToken()}`,
     },
     body: JSON.stringify({
       person_id: "a0ee65b5-7c0e-4ca0-ac8d-ad2c0f18a499",
@@ -84,7 +86,7 @@ export async function paySale() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${await getToken()}`,
       body: JSON.stringify({
         payment_method: 2,
         is_face_to_face: false,
@@ -110,7 +112,7 @@ export async function checkoutSale() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${await getToken()}`,
       body: JSON.stringify({
         id,
         checkout_type: "1",
@@ -134,7 +136,7 @@ export async function finalizeSale() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
+        Authorization: `Bearer ${await getToken()}`,
       },
     }
   );
@@ -154,7 +156,7 @@ export async function downloadNfsePdf() {
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${getToken()}`,
+        Authorization: `Bearer ${await getToken()}`,
       },
     }
   );
@@ -170,12 +172,16 @@ export async function reset() {
   "use server";
   const cookieStore = cookies();
   const id = cookieStore.get("schedule_id");
-  await fetch(`${process.env.BASE_URL}/v1/schedules/${id}`, {
+  console.log('schedule id', id);
+  
+  const deleteRes = await fetch(`${process.env.BASE_URL}/v1/schedules/${id?.value}`, {
     method: "DELETE",
     headers: {
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: `Bearer ${await getToken()}`,
     },
   });
+
+  console.log(deleteRes);
 
   cookieStore.delete("schedule_id");
   cookieStore.delete("schedule");
